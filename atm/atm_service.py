@@ -9,11 +9,14 @@ class ATMService:
         self.current_user = None  
 
     def authenticate_user(self, username, pin):
-        self.cursor.execute('SELECT pin FROM customers WHERE username = %s', (username,))
+        username = username.lower().strip()  
+        self.cursor.execute('SELECT username, pin FROM customers WHERE LOWER(username) = %s', (username,))
         result = self.cursor.fetchone()
-        if result and result[0] == pin:
-            print(f'Welcome, {username}!')
-            self.current_user = username
+
+        if result and result[1] == pin:
+            stored_username = result[0]  
+            print(f'Welcome, {stored_username}!')
+            self.current_user = stored_username  
             return True
         else:
             print('Invalid credentials.')
@@ -28,4 +31,4 @@ class ATMService:
                 transaction_manager = TransactionManager()
                 transaction_manager.execute_transaction(self)
             else:
-                print('Please try again.')
+                print('Please try again..')
